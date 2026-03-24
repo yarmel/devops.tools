@@ -105,7 +105,7 @@ fi
 # Build prompt
 # -----------------------------------------------------------
 
-PROMPT="A square 1024x1024 illustration that fills the ENTIRE canvas edge-to-edge with NO border, NO rounded corners, NO frame, NO margin — the artwork must extend to all four edges. The scene depicts: $KEYWORDS — centered as the main subject, occupying roughly 60% of the canvas. Style: $STYLE. $GRADIENT_TEXT. No text, no letters, no words. No icon-inside-icon effect. The image IS the icon, the OS will mask it."
+PROMPT="A single flat 1024x1024 square image. NOT an app icon mockup — just a plain illustration. The background ($GRADIENT_TEXT) fills the entire canvas from edge to edge. On top of this background, place the subject: $KEYWORDS — centered, occupying about 60% of the canvas. The subject sits directly on the background with no card, no frame, no rounded rectangle, no shadow, no 3D floating effect, no border, no margin. Think of it as a seamless wallpaper with a centered motif. Style: $STYLE. No text, no letters, no words anywhere."
 
 echo -e "\n${CYAN}Prompt:${NC} $PROMPT"
 echo -e "${CYAN}Generating $COUNT icon(s)...${NC}\n"
