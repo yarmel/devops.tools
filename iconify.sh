@@ -34,7 +34,7 @@ if ! command -v jq &>/dev/null; then
   exit 1
 fi
 
-# Encode sample icon sheets as base64
+# Sample icon reference sheets
 SAMPLE1="$SAMPLES_DIR/s1.jpg"
 SAMPLE2="$SAMPLES_DIR/s2.jpg"
 
@@ -42,13 +42,6 @@ if [[ ! -f "$SAMPLE1" || ! -f "$SAMPLE2" ]]; then
   echo -e "${RED}Error: sample icon sheets not found in $SAMPLES_DIR${NC}"
   exit 1
 fi
-
-echo -e "${CYAN}Loading sample icon sheets...${NC}"
-S1_TMP=$(mktemp)
-S2_TMP=$(mktemp)
-base64 < "$SAMPLE1" | tr -d '\n' > "$S1_TMP"
-base64 < "$SAMPLE2" | tr -d '\n' > "$S2_TMP"
-trap 'rm -f "$S1_TMP" "$S2_TMP"' EXIT
 
 # Find next version number based on existing files
 LAST_VERSION=$(ls -1 "$OUTPUT_DIR"/${ICON_PREFIX}-v*.png 2>/dev/null \
