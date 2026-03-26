@@ -1255,10 +1255,23 @@ echo -e "\033[0;32m | -- Build → $CURRENT_PROJECT_VERSION \033[0m"
 # SYNC CLAUDE SETTINGS
 # --------------------
 sync_claude() {
-  local SRC_DIR
-  SRC_DIR="$(pwd)"
+  # Find platform project by walking up from cwd
+  local SRC_DIR=""
+  local _check="$(pwd)"
+  while [[ "$_check" != "/" ]]; do
+    if [[ -d "$_check/platform/.claude" ]]; then
+      SRC_DIR="$_check/platform"
+      break
+    fi
+    _check="$(dirname "$_check")"
+  done
+  if [[ -z "$SRC_DIR" ]]; then
+    echo -e "\033[0;31m [ ✖︎ ] -- Platform project not found.\033[0m"
+    return 1
+  fi
+
   local APPS_DIR
-  APPS_DIR="$(cd .. && pwd)"
+  APPS_DIR="$(dirname "$SRC_DIR")"
 
   # Discover all sibling Flutter projects (by pubspec.yaml)
   local PROJECTS=()
@@ -1266,7 +1279,7 @@ sync_claude() {
   while IFS= read -r pubspec; do
     local proj_dir
     proj_dir="$(dirname "$pubspec")"
-    [[ "$proj_dir" == "$SRC_DIR" || "$proj_dir" == "$(pwd)" ]] && continue
+    [[ "$proj_dir" == "$SRC_DIR" ]] && continue
     local desc
     desc="$(grep -m1 '^description:' "$pubspec" 2>/dev/null | sed 's/description: //')"
     local rel_path

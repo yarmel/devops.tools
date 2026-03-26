@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # ============================================================
-# iconify.sh — generate app icons via OpenAI DALL-E 3
+# iconify.sh — generate app icons via OpenAI GPT-4o
 # Usage: ./iconify.sh
 # ============================================================
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SAMPLES_DIR="$SCRIPT_DIR/.samples"
 OUTPUT_DIR="$(pwd)"
-API_URL="https://api.openai.com/v1/images/generations"
+API_URL="https://api.openai.com/v1/chat/completions"
 ICON_PREFIX="app-icon-flow"
 
 # Colors
