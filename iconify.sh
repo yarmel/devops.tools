@@ -152,29 +152,32 @@ VERSION=$NEXT_VERSION
 for i in $(seq 1 "$COUNT"); do
   echo -e "${YELLOW} [$i/$COUNT] Generating...${NC}"
 
-  PAYLOAD=$(jq -n \
+  PAYLOAD_FILE=$(mktemp)
+  jq -n \
     --arg model "gpt-4o" \
     --arg prompt "$PROMPT" \
-    --arg s1 "data:image/jpeg;base64,$S1_B64" \
-    --arg s2 "data:image/jpeg;base64,$S2_B64" \
+    --rawfile s1_raw "$S1_TMP" \
+    --rawfile s2_raw "$S2_TMP" \
     '{
       model: $model,
       modalities: ["text", "image"],
       messages: [{
         role: "user",
         content: [
-          { type: "image_url", image_url: { url: $s1, detail: "high" } },
-          { type: "image_url", image_url: { url: $s2, detail: "high" } },
+          { type: "image_url", image_url: { url: ("data:image/jpeg;base64," + $s1_raw), detail: "high" } },
+          { type: "image_url", image_url: { url: ("data:image/jpeg;base64," + $s2_raw), detail: "high" } },
           { type: "text",      text: $prompt }
         ]
       }],
       max_tokens: 4096
-    }')
+    }' > "$PAYLOAD_FILE"
 
   RESPONSE=$(curl -s "$API_URL" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d "$PAYLOAD")
+    -d "@$PAYLOAD_FILE")
+
+  rm -f "$PAYLOAD_FILE"
 
   # Check for error
   ERROR=$(echo "$RESPONSE" | jq -r '.error.message // empty')
