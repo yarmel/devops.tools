@@ -148,17 +148,29 @@ VERSION=$NEXT_VERSION
 for i in $(seq 1 "$COUNT"); do
   echo -e "${YELLOW} [$i/$COUNT] Generating...${NC}"
 
+  PAYLOAD=$(jq -n \
+    --arg model "gpt-4o" \
+    --arg prompt "$PROMPT" \
+    --arg s1 "data:image/jpeg;base64,$S1_B64" \
+    --arg s2 "data:image/jpeg;base64,$S2_B64" \
+    '{
+      model: $model,
+      modalities: ["text", "image"],
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image_url", image_url: { url: $s1, detail: "high" } },
+          { type: "image_url", image_url: { url: $s2, detail: "high" } },
+          { type: "text",      text: $prompt }
+        ]
+      }],
+      max_tokens: 4096
+    }')
+
   RESPONSE=$(curl -s "$API_URL" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -d "$(jq -n \
-      --arg model "dall-e-3" \
-      --arg prompt "$PROMPT" \
-      --arg size "1024x1024" \
-      --arg quality "hd" \
-      --arg n "1" \
-      '{model: $model, prompt: $prompt, size: $size, quality: $quality, n: ($n | tonumber)}'
-    )")
+    -d "$PAYLOAD")
 
   # Check for error
   ERROR=$(echo "$RESPONSE" | jq -r '.error.message // empty')
@@ -168,24 +180,29 @@ for i in $(seq 1 "$COUNT"); do
     continue
   fi
 
-  # Extract URL
-  IMAGE_URL=$(echo "$RESPONSE" | jq -r '.data[0].url // empty')
-  if [[ -z "$IMAGE_URL" ]]; then
-    echo -e "${RED} [ ✗ ] No image URL in response${NC}"
+  # Extract base64 image from response (GPT-4o returns image in content array)
+  IMAGE_B64=$(echo "$RESPONSE" | jq -r '
+    .choices[0].message.content[]
+    | select(.type == "image_url")
+    | .image_url.url
+    // empty' | sed 's|^data:image/[^;]*;base64,||')
+
+  if [[ -z "$IMAGE_B64" ]]; then
+    echo -e "${RED} [ ✗ ] No image in response${NC}"
     ((FAIL++))
     continue
   fi
 
-  # Download
+  # Decode and save
   FILENAME="${ICON_PREFIX}-v${VERSION}.png"
   FILEPATH="$OUTPUT_DIR/$FILENAME"
 
-  if curl -s "$IMAGE_URL" -o "$FILEPATH"; then
+  if echo "$IMAGE_B64" | base64 -d > "$FILEPATH" 2>/dev/null || echo "$IMAGE_B64" | base64 -D > "$FILEPATH" 2>/dev/null; then
     echo -e "${GREEN} [ ✓ ] Saved: $FILENAME${NC}"
     ((SUCCESS++))
     ((VERSION++))
   else
-    echo -e "${RED} [ ✗ ] Download failed${NC}"
+    echo -e "${RED} [ ✗ ] Failed to decode image${NC}"
     ((FAIL++))
   fi
 done
