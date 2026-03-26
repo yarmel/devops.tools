@@ -62,8 +62,7 @@ echo -e "${BOLD}Keywords${NC} (describe the central figure/visual):"
 read -rp "> " KEYWORDS
 
 if [[ -z "$KEYWORDS" ]]; then
-  echo -e "${RED}Keywords cannot be empty.${NC}"
-  exit 1
+  KEYWORDS=""
 fi
 
 # Background color
