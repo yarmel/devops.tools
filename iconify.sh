@@ -120,7 +120,13 @@ fi
 # Build prompt
 # -----------------------------------------------------------
 
-PROMPT="I'm attaching two reference sheets of geometric/abstract icon symbols that I like. Pick ONE symbol from these sheets that best matches the concept: $KEYWORDS. Take that exact symbol, keep its geometric structure, and only apply minimal modifications — adjust proportions or small details to make it feel unique, but do NOT redesign it from scratch.
+if [[ -n "$KEYWORDS" ]]; then
+  PICK_LINE="Pick ONE symbol from these sheets that best matches the concept: $KEYWORDS."
+else
+  PICK_LINE="Pick any ONE symbol you like from these sheets at random."
+fi
+
+PROMPT="I'm attaching two reference sheets of geometric/abstract icon symbols that I like. $PICK_LINE Take that exact symbol, keep its geometric structure, and only apply minimal modifications — adjust proportions or small details to make it feel unique, but do NOT redesign it from scratch.
 
 Now generate a single 1024×1024 square image:
 - Background: $GRADIENT_TEXT, fills the entire canvas edge-to-edge
