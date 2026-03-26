@@ -44,8 +44,11 @@ if [[ ! -f "$SAMPLE1" || ! -f "$SAMPLE2" ]]; then
 fi
 
 echo -e "${CYAN}Loading sample icon sheets...${NC}"
-S1_B64=$(base64 < "$SAMPLE1" | tr -d '\n')
-S2_B64=$(base64 < "$SAMPLE2" | tr -d '\n')
+S1_TMP=$(mktemp)
+S2_TMP=$(mktemp)
+base64 < "$SAMPLE1" | tr -d '\n' > "$S1_TMP"
+base64 < "$SAMPLE2" | tr -d '\n' > "$S2_TMP"
+trap 'rm -f "$S1_TMP" "$S2_TMP"' EXIT
 
 # Find next version number based on existing files
 LAST_VERSION=$(ls -1 "$OUTPUT_DIR"/${ICON_PREFIX}-v*.png 2>/dev/null \
