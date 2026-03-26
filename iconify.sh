@@ -34,6 +34,18 @@ if ! command -v jq &>/dev/null; then
   exit 1
 fi
 
+# Encode sample icon sheets as base64
+SAMPLE1="$SAMPLES_DIR/s1.jpg"
+SAMPLE2="$SAMPLES_DIR/s2.jpg"
+
+if [[ ! -f "$SAMPLE1" || ! -f "$SAMPLE2" ]]; then
+  echo -e "${RED}Error: sample icon sheets not found in $SAMPLES_DIR${NC}"
+  exit 1
+fi
+
+S1_B64=$(base64 < "$SAMPLE1")
+S2_B64=$(base64 < "$SAMPLE2")
+
 # Find next version number based on existing files
 LAST_VERSION=$(ls -1 "$OUTPUT_DIR"/${ICON_PREFIX}-v*.png 2>/dev/null \
   | sed -E "s/.*${ICON_PREFIX}-v([0-9]+)\.png/\1/" \
