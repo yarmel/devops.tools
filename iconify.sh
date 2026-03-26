@@ -124,7 +124,15 @@ fi
 # Build prompt
 # -----------------------------------------------------------
 
-PROMPT="A single flat 1024x1024 square image. NOT an app icon mockup — just a plain illustration. The background ($GRADIENT_TEXT) fills the entire canvas from edge to edge. On top of this background, place the subject: $KEYWORDS — centered, occupying about 60% of the canvas. The subject sits directly on the background with no card, no frame, no rounded rectangle, no shadow, no 3D floating effect, no border, no margin. Think of it as a seamless wallpaper with a centered motif. Style: $STYLE. No text, no letters, no words anywhere."
+PROMPT="I'm attaching two reference sheets of geometric/abstract icon symbols that I like. Pick ONE symbol from these sheets that best matches the concept: $KEYWORDS. Take that exact symbol, keep its geometric structure, and only apply minimal modifications — adjust proportions or small details to make it feel unique, but do NOT redesign it from scratch.
+
+Now generate a single 1024×1024 square image:
+- Background: $GRADIENT_TEXT, fills the entire canvas edge-to-edge
+- Place the chosen symbol centered, occupying about 60 % of the canvas
+- Style the symbol as: $STYLE
+- NO app-icon mockup, NO rounded rectangle, NO card, NO frame, NO shadow, NO 3D floating effect, NO border, NO margin
+- NO text, NO letters, NO words anywhere
+- Think of it as a seamless flat wallpaper with one centered geometric motif"
 
 echo -e "\n${CYAN}Prompt:${NC} $PROMPT"
 echo -e "${CYAN}Generating $COUNT icon(s)...${NC}\n"
