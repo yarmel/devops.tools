@@ -5,8 +5,9 @@
 # Usage: ./iconify.sh
 # ============================================================
 
-OUTPUT_DIR="$HOME/Tmp/icons"
+OUTPUT_DIR="$(pwd)"
 API_URL="https://api.openai.com/v1/images/generations"
+ICON_PREFIX="app-icon-flow"
 
 # Colors
 GREEN='\033[0;32m'
@@ -31,7 +32,11 @@ if ! command -v jq &>/dev/null; then
   exit 1
 fi
 
-mkdir -p "$OUTPUT_DIR"
+# Find next version number based on existing files
+LAST_VERSION=$(ls -1 "$OUTPUT_DIR"/${ICON_PREFIX}-v*.png 2>/dev/null \
+  | sed -E "s/.*${ICON_PREFIX}-v([0-9]+)\.png/\1/" \
+  | sort -n | tail -1)
+NEXT_VERSION=$(( ${LAST_VERSION:-0} + 1 ))
 
 # -----------------------------------------------------------
 # Collect input
@@ -114,9 +119,9 @@ echo -e "${CYAN}Generating $COUNT icon(s)...${NC}\n"
 # Generate
 # -----------------------------------------------------------
 
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 SUCCESS=0
 FAIL=0
+VERSION=$NEXT_VERSION
 
 for i in $(seq 1 "$COUNT"); do
   echo -e "${YELLOW} [$i/$COUNT] Generating...${NC}"
@@ -150,12 +155,13 @@ for i in $(seq 1 "$COUNT"); do
   fi
 
   # Download
-  FILENAME="icon_${TIMESTAMP}_${i}.png"
+  FILENAME="${ICON_PREFIX}-v${VERSION}.png"
   FILEPATH="$OUTPUT_DIR/$FILENAME"
 
   if curl -s "$IMAGE_URL" -o "$FILEPATH"; then
-    echo -e "${GREEN} [ ✓ ] Saved: $FILEPATH${NC}"
+    echo -e "${GREEN} [ ✓ ] Saved: $FILENAME${NC}"
     ((SUCCESS++))
+    ((VERSION++))
   else
     echo -e "${RED} [ ✗ ] Download failed${NC}"
     ((FAIL++))
