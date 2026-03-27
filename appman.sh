@@ -13,6 +13,9 @@ export FASTLANE_SKIP_UPDATE_CHECK=true
 export IOS_UPLOADER="fastlane"
 export ANDROID_UPLOADER="fastlane"
 
+FLUTTER_APPS_DIR="$HOME/Projects/Flutter/Apps"
+CLAUDE_SOURCE_PROJECT="$FLUTTER_APPS_DIR/octopoos/app.octopoos.platform"
+
 # ACCESS SERVICE KEYS (from .env)
 if [ -f ".env" ]; then
   set -a
