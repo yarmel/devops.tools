@@ -1221,8 +1221,8 @@ init_project() {
 # APPMAN RUNNER
 # ==============================================================================
 
-# Ensure we're in a Flutter project root
-if [ ! -f "pubspec.yaml" ]; then
+# Ensure we're in a Flutter project root (skip for commands that don't need it)
+if [[ "$COMMAND" != "sync" && "$COMMAND" != "info" ]] && [ ! -f "pubspec.yaml" ]; then
   echo " [ ✖︎ ] -- pubspec.yaml not found. Run this from the project root."
   exit 1
 fi
