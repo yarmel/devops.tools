@@ -1259,8 +1259,8 @@ sync_claude() {
   local SRC_DIR=""
   local _check="$(pwd)"
   while [[ "$_check" != "/" ]]; do
-    if [[ -d "$_check/platform/.claude" ]]; then
-      SRC_DIR="$_check/platform"
+    if [[ -d "$_check/octopoos/app.octopoos.platform/.claude" ]]; then
+      SRC_DIR="$_check/octopoos/app.octopoos.platform"
       break
     fi
     _check="$(dirname "$_check")"
