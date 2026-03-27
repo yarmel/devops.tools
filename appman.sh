@@ -1227,31 +1227,33 @@ if [[ "$COMMAND" != "sync" && "$COMMAND" != "info" ]] && [ ! -f "pubspec.yaml" ]
   exit 1
 fi
 
-APP_DESCRIPTION=$(grep -m1 '^description:' pubspec.yaml | sed 's/description: //')
-echo -e "\033[0;32m---------------------------------\033[0m"
-echo -e "\033[0;32m   ${APP_DESCRIPTION:-App} Manager   \033[0m"
-echo -e "\033[0;32m---------------------------------\033[0m"
+if [[ "$COMMAND" != "sync" && "$COMMAND" != "info" ]]; then
+  APP_DESCRIPTION=$(grep -m1 '^description:' pubspec.yaml | sed 's/description: //')
+  echo -e "\033[0;32m---------------------------------\033[0m"
+  echo -e "\033[0;32m   ${APP_DESCRIPTION:-App} Manager   \033[0m"
+  echo -e "\033[0;32m---------------------------------\033[0m"
 
-version_line=$(grep '^version:' pubspec.yaml)
-if [[ ! $version_line =~ version:\ ([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+) ]]; then
-  echo " [ ✖︎ ] -- pubspec.yaml not found or malformed"
-  exit 1
+  version_line=$(grep '^version:' pubspec.yaml)
+  if [[ ! $version_line =~ version:\ ([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+) ]]; then
+    echo " [ ✖︎ ] -- pubspec.yaml not found or malformed"
+    exit 1
+  fi
+
+  export MARKETING_VERSION="${BASH_REMATCH[1]}"
+  export CURRENT_PROJECT_VERSION="${BASH_REMATCH[2]}"
+
+  bundle_line=$(grep '^bundle:' pubspec.yaml)
+  if [[ ! $bundle_line =~ bundle:\ ([a-zA-Z0-9._-]+) ]]; then
+    echo " [ ✖︎ ] -- bundle ID not found or malformed in pubspec.yaml"
+    exit 1
+  fi
+
+  export BUNDLE_ID="${BASH_REMATCH[1]}"
+
+  echo -e "\033[0;32m | -- BundleID → $BUNDLE_ID \033[0m"
+  echo -e "\033[0;32m | -- Version → $MARKETING_VERSION \033[0m"
+  echo -e "\033[0;32m | -- Build → $CURRENT_PROJECT_VERSION \033[0m"
 fi
-
-export MARKETING_VERSION="${BASH_REMATCH[1]}"
-export CURRENT_PROJECT_VERSION="${BASH_REMATCH[2]}"
-
-bundle_line=$(grep '^bundle:' pubspec.yaml)
-if [[ ! $bundle_line =~ bundle:\ ([a-zA-Z0-9._-]+) ]]; then
-  echo " [ ✖︎ ] -- bundle ID not found or malformed in pubspec.yaml"
-  exit 1
-fi
-
-export BUNDLE_ID="${BASH_REMATCH[1]}"
-
-echo -e "\033[0;32m | -- BundleID → $BUNDLE_ID \033[0m"
-echo -e "\033[0;32m | -- Version → $MARKETING_VERSION \033[0m"
-echo -e "\033[0;32m | -- Build → $CURRENT_PROJECT_VERSION \033[0m"
 
 # RUNNER
 # --------------------
