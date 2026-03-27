@@ -1258,38 +1258,23 @@ echo -e "\033[0;32m | -- Build → $CURRENT_PROJECT_VERSION \033[0m"
 # SYNC CLAUDE SETTINGS
 # --------------------
 sync_claude() {
-  # Find platform project by walking up from cwd
-  local SRC_DIR=""
-  local _check="$(pwd)"
-  while [[ "$_check" != "/" ]]; do
-    if [[ -d "$_check/octopoos/app.octopoos.platform/.claude" ]]; then
-      SRC_DIR="$_check/octopoos/app.octopoos.platform"
-      break
-    fi
-    _check="$(dirname "$_check")"
-  done
-  if [[ -z "$SRC_DIR" ]]; then
-    echo -e "\033[0;31m [ ✖︎ ] -- Platform project not found.\033[0m"
+  local SRC_DIR="$CLAUDE_SOURCE_PROJECT"
+
+  if [[ ! -d "$SRC_DIR/.claude" ]]; then
+    echo -e "\033[0;31m [ ✖︎ ] -- Source project not found: $SRC_DIR\033[0m"
     return 1
   fi
 
-  local APPS_DIR
-  APPS_DIR="$(dirname "$SRC_DIR")"
-
-  # Discover all sibling Flutter projects (by pubspec.yaml)
+  # Discover all projects at depth 2 in FLUTTER_APPS_DIR (group/project)
   local PROJECTS=()
   local LABELS=()
-  while IFS= read -r pubspec; do
-    local proj_dir
-    proj_dir="$(dirname "$pubspec")"
+  for proj_dir in "$FLUTTER_APPS_DIR"/*/*; do
+    [[ ! -d "$proj_dir" ]] && continue
     [[ "$proj_dir" == "$SRC_DIR" ]] && continue
-    local desc
-    desc="$(grep -m1 '^description:' "$pubspec" 2>/dev/null | sed 's/description: //')"
-    local rel_path
-    rel_path="${proj_dir#$APPS_DIR/}"
+    local rel_path="${proj_dir#$FLUTTER_APPS_DIR/}"
     PROJECTS+=("$proj_dir")
-    LABELS+=("$desc ($rel_path)")
-  done < <(find "$APPS_DIR" -maxdepth 3 -name "pubspec.yaml" -not -path "*/build/*" | sort)
+    LABELS+=("$rel_path")
+  done
 
   if [[ ${#PROJECTS[@]} -eq 0 ]]; then
     echo -e "\033[0;31m [ ✖︎ ] -- No sibling projects found.\033[0m"
