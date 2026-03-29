@@ -448,12 +448,6 @@ cleanup_metadata() {
   find "$BASE_DIR/android" -type f -path "*/changelogs/*.txt" -delete
   find "$BASE_DIR/ios" -type f -name "whats_new.txt" -delete
 
-  CHANGELOG_FILE="./changelog.md"
-  if [ -f "$CHANGELOG_FILE" ]; then
-    > "$CHANGELOG_FILE"
-    echo " [ ✔︎ ] -- CHANGELOG.md cleared"
-  fi
-
   echo -e "\n\033[0;32m [ ◎ ] -- Metadata cleanup complete \033[0m\n"
 }
 
