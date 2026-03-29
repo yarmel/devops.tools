@@ -424,19 +424,9 @@ generate_metadata() {
   IOS_DIR="$BASE_DIR/ios/$METADATA_LOCALE"
   ANDROID_DIR="$BASE_DIR/android/$METADATA_LOCALE/changelogs"
 
-  CHANGELOG_FILE="./changelog.md"
-
   mkdir -p "$IOS_DIR" "$ANDROID_DIR"
 
-  if [ ! -f "$CHANGELOG_FILE" ]; then
-    echo "* Performance improvements and bug fixes;" > "$CHANGELOG_FILE"
-    echo " [ ✔︎ ] -- Created default CHANGELOG.md"
-  fi
-
-  WHATS_NEW=$(cat "$CHANGELOG_FILE" | sed '/^\s*$/d')
-  if [ -z "$WHATS_NEW" ]; then
-    WHATS_NEW="* Performance improvements and bug fixes;"
-  fi
+  WHATS_NEW="* Performance improvements and bug fixes;"
 
   IOS_FILE="$IOS_DIR/whats_new.txt"
   echo "$WHATS_NEW" > "$IOS_FILE"
