@@ -226,14 +226,6 @@ ios_appstore_release() {
       exit 1
     fi
 
-    echo -e "\n\033[0;32m [ ◎ ] -- AppStore Connect validate... \033[0m \n"
-    xcrun altool \
-      --validate-app \
-      --type ios \
-      --file build/ios/ipa/*.ipa \
-      --apiKey "$APPSTORE_API_KEY" \
-      --apiIssuer "$APPSTORE_API_ISSUER"
-
     echo -e "\n\033[0;32m [ ◎ ] -- AppStore Connect upload... \033[0m \n"
     case "$IOS_UPLOADER" in
       xcrun)
