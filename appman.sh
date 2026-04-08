@@ -306,7 +306,7 @@ crashlytics_symbols_upload() {
   echo -e "\n\033[0;32m [ ◎ ] -- Crashlytics symbols upload started... \033[0m\n"
 
   ANDROID_SYMBOLS_DIR="build/symbols/android"
-  IOS_SYMBOLS_DIR="build/symbols/ios"
+  IOS_SYMBOLS_DIR="build/ios/archive/Runner.xcarchive/dSYMs"
 
   ANDROID_APP_ID=$(jq -r '.client[0].client_info.mobilesdk_app_id' android/app/google-services.json)
   IOS_APP_ID=$(/usr/libexec/PlistBuddy -c "Print :GOOGLE_APP_ID" ios/Runner/GoogleService-Info.plist)
