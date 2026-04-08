@@ -327,7 +327,7 @@ crashlytics_symbols_upload() {
     echo -e "\033[1;34m [ ↑ ] -- Upload iOS symbols from: $IOS_SYMBOLS_DIR \033[0m\n"
     firebase crashlytics:symbols:upload \
       --app="$IOS_APP_ID" \
-      --debug-symbols="$IOS_SYMBOLS_DIR"
+      "$IOS_SYMBOLS_DIR"
     echo -e "\033[0;32m [ ✔︎ ] -- iOS symbols uploaded. \033[0m\n"
   else
     echo -e "\033[0;33m [ △ ] -- iOS symbols directory not found, skipping. \033[0m\n"
@@ -342,7 +342,7 @@ crashlytics_symbols_upload() {
 webapp_firebase_release(){
   if [ "$RUN_WEB" = true ]; then
     echo -e "\n\033[0;32m [ ◎ ] -- Building Web... \033[0m\n"
-    fvm flutter build web
+    fvm flutter build web --no-tree-shake-icons
 
     # Read Firebase project ID from .firebaserc
     if [ -f .firebaserc ]; then
@@ -883,6 +883,19 @@ init_firebase_setup() {
   echo -e "\n\033[0;32m [ ✔︎ ] -- Firebase setup complete.\033[0m"
 }
 
+init_create_migrations() {
+  echo -e "\033[0;32m [ ◎ ] -- Creating .migrations/ directory...\033[0m"
+  mkdir -p .migrations
+  cat > .migrations/migrations.json <<MIGJSON
+{
+  "version": 1,
+  "project": "$INIT_BUNDLE_ID",
+  "migrations": {}
+}
+MIGJSON
+  echo -e "  \033[0;32m✓\033[0m .migrations/migrations.json"
+}
+
 init_finalize() {
   echo -e "\n\033[0;32m [ ◎ ] -- Running flutter pub get...\033[0m\n"
   fvm flutter pub get
@@ -1188,6 +1201,7 @@ init_project() {
   init_rename_dart_imports
   init_replace_i18n
   init_replace_docs
+  init_create_migrations
   init_finalize
   init_firebase_setup
   init_print_checklist
